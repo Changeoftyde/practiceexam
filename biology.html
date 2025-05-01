@@ -1,0 +1,163 @@
+<body>
+<p id="questioncounter">Question 1:</p>
+<h1 id="question">What is this question reading?</h1>
+<div class="hidden" id="multiplechoice">
+<form>
+<input name="answer" type="radio" id="answerA"><label id="labelA" for="answerA">Answer A</label>
+<br><input name="answer" type="radio" id="answerB"><label id="labelB" for="answerB">Answer B</label>
+<br><input name="answer" type="radio" id="answerC"><label id="labelC" for="answerC">Answer C</label>
+<br><input name="answer" type="radio" id="answerD"><label id="labelD" for="answerD">Answer D</label>
+</form>
+</div>
+<div class="hidden" id="shortanswer">
+<textarea id="answerblank"></textarea>
+<div class="hidden" id="a">
+<span>Correct Answer:<br>
+</span>
+<span id="aa"></span>
+<div onclick="makecorrect()" id="con">Press if Correct</div>
+</div>
+</div>
+<div id="next" onclick="check()">Check</div>
+</body>
+<style>
+#con {
+  background-color: black;
+  color: white;
+  border-radius: 1vh;
+  position: absolute;
+  padding: 1vh;
+  margin-top: 2vh;
+  margin-left: -0.2vh;
+}
+#aa {
+  font-weight: bold;
+}
+#a {
+  position: absolute;
+  font-size: 2.5vh;
+  font-family: "Times New Roman";
+}
+#answerblank {
+  height: 30vh;
+  position: absolute;
+  font-size: 2.5vh;
+  font-family: "Times New Roman";
+}
+#next {
+  text-align: center;
+  font-size: 5vh;
+  border-radius: 1vh;
+  outline: 0.6vh solid black;
+  width: 15vh;
+  height: 6vh;
+  right: 2vh;
+  bottom: 2vh;
+  position: absolute;
+}
+#question {
+  margin-top: -2vh;
+}
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+</style>
+<script>
+resizeall();
+window.addEventListener("resize", resizeall);
+function resizeall() {
+  document.getElementById("answerblank").style.width = window.innerWidth - window.innerHeight * 0.025; 
+  document.getElementById("answerblank").style.top = document.getElementById("question").offsetHeight;
+  document.getElementById("a").style.width = window.innerWidth - window.innerHeight * 0.025; 
+  document.getElementById("a").style.top = document.getElementById("question").offsetHeight + document.getElementById("answerblank").offsetHeight + window.innerHeight * 0.02;
+}
+questiontypes = [1, 0, 1]
+questions = ["a", "b", "c"];
+answers = [["0", "0", "0", "1"], "this is the answer", ["0", "1", "0", "0"]];
+correctanswers = [3, -1, 1];
+cq = 0;
+numcorrect = 0;
+letters = ["A", "B", "C", "D"];
+startOfGame();
+function startOfGame() {
+  document.getElementById("question").innerHTML = questions[cq];
+  if (questiontypes[0] == 1) {
+    document.getElementById("multiplechoice").classList.remove("hidden");
+    for (i = 0; i < 4; i++) {
+      document.getElementById("label" + letters[i]).innerHTML = answers[cq][i];
+    }
+  } else {
+    document.getElementById("shortanswer").classList.remove("hidden");
+  }
+}
+function makecorrect() {
+  numcorrect++;
+  document.getElementById("answerblank").style.color = "green";
+}
+function endgame() {
+  localStorage.setItem("nc", numcorrect);
+  localStorage.setItem("tq", cq);
+  window.location.href = "biologyresults.html";
+}
+function check() {
+  checked = false;
+  for (i = 0; i < 4; i++) {
+    if (document.getElementById("answer" + letters[i]).checked && questiontypes[cq] == 1) {
+      checked = true;
+    }
+  }
+  if (questiontypes[cq] == 0 && document.getElementById("answerblank").value != "") {
+    checked = true;
+  }
+  if (checked) {
+  if (questiontypes[cq] == 1) {
+    for (i = 0; i < 4; i++) {
+      document.getElementById("label" + letters[i]).style.color = "red";
+      if (document.getElementById("answer" + letters[i]).checked) {
+        document.getElementById("label" + letters[i]).style.color = "#ff6600";
+      }
+      if (i == correctanswers[cq]) {
+        document.getElementById("label" + letters[i]).style.color = "green";
+      }
+      if (i == correctanswers[cq] && document.getElementById("answer" + letters[i]).checked) {
+        numcorrect++;
+      }
+    }
+  } else {
+    document.getElementById("a").classList.remove("hidden");
+    document.getElementById("aa").innerHTML = answers[cq];
+  }
+  document.getElementById("next").innerHTML = "Next";
+  document.getElementById("next").setAttribute("onclick", "next()");
+  } else {
+    alert("Please submit an answer.");
+  }
+}
+function next() {
+  cq++;
+  if (cq == questions.length) {
+    endgame();
+  } else {
+  document.getElementById("questioncounter").innerHTML = "Question " + (cq + 1).toString() + ":";
+  document.getElementById("question").innerHTML = questions[cq];
+  if (questiontypes[cq] == 1) {
+    document.getElementById("shortanswer").classList.add("hidden");
+    document.getElementById("multiplechoice").classList.remove("hidden");
+    for (i = 0; i < 4; i++) {
+      document.getElementById("label" + letters[i]).innerHTML = answers[cq][i];
+      document.getElementById("label" + letters[i]).style.color = "black";
+      document.getElementById("answer" + letters[i]).checked = false;
+    }
+  } else {
+    document.getElementById("multiplechoice").classList.add("hidden");
+    document.getElementById("shortanswer").classList.remove("hidden");
+    document.getElementById("answerblank").style.color = "black";
+    document.getElementById("a").classList.add("hidden");
+    document.getElementById("answerblank").value = "";
+  }
+  document.getElementById("next").innerHTML = "Check";
+  document.getElementById("next").setAttribute("onclick", "check()");
+  }
+}
+</script>
