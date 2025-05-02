@@ -117,10 +117,10 @@ function check() {
       if (document.getElementById("answer" + letters[i]).checked) {
         document.getElementById("label" + letters[i]).style.color = "#ff6600";
       }
-      if (i == correctanswers[cq]) {
+      if (i + 1 == correctanswers[cq]) {
         document.getElementById("label" + letters[i]).style.color = "green";
       }
-      if (i == correctanswers[cq] && document.getElementById("answer" + letters[i]).checked) {
+      if (i + 1 == correctanswers[cq] && document.getElementById("answer" + letters[i]).checked) {
         numcorrect++;
       }
     }
